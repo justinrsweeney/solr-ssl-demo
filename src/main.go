@@ -20,11 +20,11 @@ var client *http.Client
 func main() {
 	r := mux.NewRouter()
 
-	caCert, _ := os.ReadFile("/tmp/solr-ca-cert.crt")
+	caCert, _ := os.ReadFile("/etc/go-client-cert/ca.crt")
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
 
-	cert, _ := tls.LoadX509KeyPair("/tmp/solr-client-cert.crt", "/tmp/solr-client-key.key")
+	cert, _ := tls.LoadX509KeyPair("/etc/go-client-cert/tls.crt", "/etc/go-client-cert/tls.key")
 
 	client = &http.Client{
 		Transport: &http.Transport{
@@ -51,7 +51,7 @@ func main() {
 // as the arguments.
 func createCollectionHandler(w http.ResponseWriter, r *http.Request) {
 	collectionName := r.URL.Query().Get("name")
-	requestURL := fmt.Sprintf("https://%s:%d/solr/admin/collections?action=CREATE&name=%s", getHostRoundRobin(), SolrPort, collectionName)
+	requestURL := fmt.Sprintf("https://%s:%d/solr/admin/collections?action=CREATE&name=%s&numShards=%d", getHostRoundRobin(), SolrPort, collectionName, 2)
 	res, err := client.Get(requestURL)
 	if err != nil {
 		fmt.Printf("error making http request: %s\n", err)
@@ -76,6 +76,6 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getHostRoundRobin() string {
-	LastUsedServerIndex++
+	LastUsedServerIndex = (LastUsedServerIndex+1) % 2
 	return SolrServers[LastUsedServerIndex]
 }
