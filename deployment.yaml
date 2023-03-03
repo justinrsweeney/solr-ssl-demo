@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-gke
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: solr-ssl-demo
+  template:
+    metadata:
+      labels:
+        app: solr-ssl-demo
+    spec:
+      containers:
+        - name: solr-ssl-demo
+          image: gcr.io/playground-377815/solr-ssl-demo/solr-ssl-demo:latest
+          # This app listens on port 8080 for web traffic by default.
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: solr-ssl-demo
+spec:
+  type: LoadBalancer
+  selector:
+    app: solr-ssl-demo
+  ports:
+    - port: 80
+      targetPort: 8080
+---
