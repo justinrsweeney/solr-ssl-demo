@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"fmt"
 	"github.com/gorilla/mux"
+	"io"
 	"net/http"
 	"os"
 )
@@ -72,7 +73,8 @@ func queryHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("client: got response!\n")
 	fmt.Printf("client: status code: %d\n", res.StatusCode)
-	fmt.Printf("client: response: %d\n", res.Body)
+	bodyBytes, err := io.ReadAll(res.Body)
+	fmt.Printf("client: response: %s\n", string(bodyBytes))
 }
 
 func getHostRoundRobin() string {
