@@ -54,6 +54,7 @@ resource "google_compute_instance" "solr" {
   gsutil cp gs://${google_storage_bucket.solr_setup_bucket.name}/solr.in.sh /etc/default/solr.in.sh
   sudo chown solr:solr /etc/solr-ssl.keystore.p12
   sudo chown solr:solr /etc/solr-ssl.truststore.p12
+  sudo chmod a+x /opt/solr/server/scripts/cloud-scripts/zkcli.sh
   /opt/solr/server/scripts/cloud-scripts/zkcli.sh -zkhost zookeeper-vm-0:2181 -cmd clusterprop -name urlScheme -val https
   sudo /etc/init.d/solr start
   EOF

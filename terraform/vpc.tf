@@ -32,12 +32,12 @@ resource "google_compute_firewall" "solr-non-tls-rule" {
   source_ranges = ["0.0.0.0/0"]
 }
 
-resource "google_compute_firewall" "solr-tls-rule" {
-  name = "${var.project_id}-vpc-solr-tls"
+resource "google_compute_firewall" "zookeeper-rule" {
+  name = "${var.project_id}-vpc-zookeeper"
   network = google_compute_network.vpc.name
   allow {
     protocol = "tcp"
-    ports = ["8443"]
+    ports = ["2181"]
   }
   source_ranges = ["0.0.0.0/0"]
 }
