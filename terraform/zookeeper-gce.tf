@@ -39,14 +39,16 @@ resource "google_compute_instance" "zookeeper" {
   # Install Solr
   metadata = {
     startup-script = <<-EOF
-  sudo apt-get update
-  sudo apt-get install -yq rsync default-jre wget
+  apt-get update
+  apt-get install -yq rsync default-jre wget
+  rm -f apache-zookeeper-3.8.1-bin.tar.gz*
   wget https://dlcdn.apache.org/zookeeper/zookeeper-3.8.1/apache-zookeeper-3.8.1-bin.tar.gz
-  tar xzf apache-zookeeper-3.8.1-bin.tar.gz -C /opt/zookeeper-3.8.1
-  mkdir /var/lib/zookeeper
+  mkdir -p /opt/zookeeper-3.8.1
+  tar xzf apache-zookeeper-3.8.1-bin.tar.gz -C /opt/zookeeper-3.8.1 --strip-components=1
+  mkdir -p /var/lib/zookeeper
   gsutil cp gs://${google_storage_bucket.zookeeper_setup_bucket.name}/zoo.cfg /opt/zookeeper-3.8.1/conf/zoo.cfg
   echo "${count.index + 1}" >> /var/lib/zookeeper/myid
-  /opt/zookeeper/bin/zkServer.sh start
+  /opt/zookeeper-3.8.1/bin/zkServer.sh start
   EOF
   }
 
